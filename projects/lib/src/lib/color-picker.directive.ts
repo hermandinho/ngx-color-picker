@@ -20,6 +20,13 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
   private cmpRef: ComponentRef<ColorPickerComponent>;
   private viewAttachedToAppRef: boolean = false;
 
+  public dropShadowResults: {
+    color?: string,
+    h?: number,
+    v?: number,
+    blur?: number,
+  } = {};
+
   @Input() colorPicker: string;
 
   @Input() cpWidth: string = '230px';
@@ -74,6 +81,14 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
 
   @Input() cpRemoveColorButtonClass: string = 'cp-remove-color-button-class';
 
+  @Input() cpEnableDropShadow: boolean = false;
+  @Input() cpDropShadowValues: {
+    color?: string,
+    h?: number,
+    v?: number,
+    blur?: number,
+  } = {};
+
   @Output() cpInputChange = new EventEmitter<{input: string, value: number | string, color: string}>(true);
 
   @Output() cpToggleChange = new EventEmitter<boolean>(true);
@@ -92,6 +107,8 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
   @Output() cpCmykColorChange = new EventEmitter<string>(true);
 
   @Output() cpPresetColorsChange = new EventEmitter<any>(true);
+
+  @Output() cpDropShadowChange = new EventEmitter<{color?: string, h?: number, v?: number, blur?: number}>(true);
 
   @HostListener('click') handleClick(): void {
     this.inputFocus();
@@ -190,6 +207,10 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
         this.cmpRef = vcRef.createComponent(compFactory, 0, injector, []);
       }
 
+      if (this.cpDropShadowValues?.color) {
+        this.colorPicker = this.cpDropShadowValues?.color;
+      }
+
       this.cmpRef.instance.setupDialog(this, this.elRef, this.colorPicker,
         this.cpWidth, this.cpHeight, this.cpDialogDisplay, this.cpFallbackColor, this.cpColorMode,
         this.cpCmykEnabled, this.cpAlphaChannel, this.cpOutputFormat, this.cpDisableInput,
@@ -200,7 +221,10 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
         this.cpPresetEmptyMessageClass, this.cpOKButton, this.cpOKButtonClass,
         this.cpOKButtonText, this.cpCancelButton, this.cpCancelButtonClass,
         this.cpCancelButtonText, this.cpAddColorButton, this.cpAddColorButtonClass,
-        this.cpAddColorButtonText, this.cpRemoveColorButtonClass, this.elRef);
+        this.cpAddColorButtonText, this.cpRemoveColorButtonClass, this.elRef,
+        this.cpEnableDropShadow,
+        this.cpDropShadowValues,
+      );
 
       this.dialog = this.cmpRef.instance;
 
@@ -282,6 +306,10 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
 
   public sliderDragEnd(event: { slider: string, color: string }): void {
     this.cpSliderDragEnd.emit(event);
+    if (this.cpEnableDropShadow) {
+      this.dropShadowResults.color = event.color;
+      this.cpDropShadowChange.emit(this.dropShadowResults);
+    }
   }
 
   public sliderDragStart(event: { slider: string, color: string }): void {

@@ -50,6 +50,23 @@ export class AppComponent {
 
   public onEventLog(event: string, data: any): void {
     console.log(event, data);
+    if (event === 'cpDropShadowChange') {
+      let shadow = '';
+      if (data.h) {
+        shadow += `${data.h}px `;
+      }
+      if (data.v) {
+        shadow += `${data.v}px `;
+      }
+      if (data.blur && (data.h || data.v)) {
+        shadow += `${data.blur}px `;
+      }
+      if (data.color) {
+        shadow += `${data.color}`;
+      }
+
+      console.log('shadow is ', shadow);
+    }
   }
 
   public onChangeColor(color: string): void {

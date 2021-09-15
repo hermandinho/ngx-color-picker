@@ -21,9 +21,15 @@
             "aot": true,
             "assets": [
               "projects/app/src/favicon.ico",
-              "projects/app/src/assets"
+              "projects/app/src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "output": "/assets/"
+              }
             ],
             "styles": [
+              "projects/app/src/theme.less",
               "projects/app/src/styles.css"
             ],
             "scripts": []

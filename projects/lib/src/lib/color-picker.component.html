@@ -121,4 +121,29 @@
 
     <button *ngIf="cpOKButton" type="button" class="{{cpOKButtonClass}}" (click)="onAcceptColor($event)">{{cpOKButtonText}}</button>
   </div>
+
+  <div class="dropshadow-box" *ngIf="cpEnableDropShadow">
+    <nz-form-item>
+      <nz-form-label nzFor="borderRadius">H offset</nz-form-label>
+      <nz-form-control nzErrorTip="That looks too long.">
+        <nz-slider (nzOnAfterChange)="onSliderChange('h', $event)" [ngModel]="dropShadowValues?.h" nzMax="48" nzMin="-48"></nz-slider>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzFor="borderRadius">V offset</nz-form-label>
+      <nz-form-control nzErrorTip="That looks too long.">
+        <nz-slider (nzOnAfterChange)="onSliderChange('v', $event)" [ngModel]="dropShadowValues?.v" nzMax="48"
+                   nzMin="-48"></nz-slider>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzFor="borderRadius">Blur</nz-form-label>
+      <nz-form-control nzErrorTip="That looks too long.">
+        <nz-slider (nzOnAfterChange)="onSliderChange('blur', $event)" [ngModel]="dropShadowValues?.blur" nzMax="48"
+                   nzMax="48"></nz-slider>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
 </div>
