@@ -1,14 +1,28 @@
-import { Component, OnInit, OnDestroy, AfterViewInit,
-  ViewChild, HostListener, ViewEncapsulation,
-  ElementRef, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  ViewChild,
+  HostListener,
+  ViewEncapsulation,
+  ElementRef,
+  ChangeDetectorRef,
+  TemplateRef
+} from '@angular/core';
 
-import { detectIE, calculateAutoPositioning } from './helpers';
+import {
+  detectIE,
+  calculateAutoPositioning,
+  AlphaChannel,
+  OutputFormat,
+  SliderDimension,
+  SliderPosition
+} from './helpers';
 
 import { ColorFormats, Cmyk, Hsla, Hsva, Rgba } from './formats';
-import { AlphaChannel, OutputFormat, SliderDimension, SliderPosition } from './helpers';
 
 import { ColorPickerService } from './color-picker.service';
-import { NzSliderValue } from 'ng-zorro-antd/slider';
 
 @Component({
   selector: 'color-picker',
@@ -118,12 +132,8 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
   public cpRemoveColorButtonClass: string;
 
   public cpEnableDropShadow: boolean;
-  public dropShadowValues: {
-    color?: string,
-    h?: number,
-    v?: number,
-    blur?: number,
-  };
+
+  public cpDropShadowTemplate: TemplateRef<any>;
 
   public cpTriggerElement: ElementRef;
 
@@ -187,14 +197,6 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onSliderChange(elt: string, value: NzSliderValue) {
-    this.directiveInstance.dropShadowResults[elt] = value;
-    this.directiveInstance.cpDropShadowChange.emit({
-      ...this.directiveInstance.dropShadowResults,
-      color: this.directiveInstance.dropShadowResults?.color ?? this.directiveInstance.colorPicker,
-    });
-  }
-
   public openDialog(color: any, emit: boolean = true): void {
     this.service.setActive(this);
 
@@ -230,12 +232,7 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     cpCancelButtonText: string, cpAddColorButton: boolean, cpAddColorButtonClass: string,
     cpAddColorButtonText: string, cpRemoveColorButtonClass: string, cpTriggerElement: ElementRef,
     cpEnableDropShadow: boolean,
-    dropShadowValues: {
-      color?: string,
-      h?: number,
-      v?: number,
-      blur?: number,
-    }
+    cpDropShadowTemplate: TemplateRef<any>,
   ): void
   {
     this.setInitialColor(color);
@@ -292,7 +289,7 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.cpTriggerElement = cpTriggerElement;
     this.cpEnableDropShadow = cpEnableDropShadow;
-    this.dropShadowValues = dropShadowValues;
+    this.cpDropShadowTemplate = cpDropShadowTemplate;
 
     if (!cpPositionRelativeToArrow) {
       this.dialogArrowOffset = 0;

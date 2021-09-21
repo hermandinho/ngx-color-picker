@@ -1,6 +1,8 @@
 import { Component, ViewContainerRef } from '@angular/core';
 
 import { ColorPickerService, Cmyk } from 'ngx-color-picker';
+import { NzSliderValue } from 'ng-zorro-antd/slider';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'my-app',
@@ -21,77 +23,91 @@ export class AppComponent {
     color5: 'rgba(45,208,45,1)'
   };
 
-  public selectedColor: string = 'color1';
-
-  public color1: string = '#2889e9';
-  public color2: string = '#e920e9';
-  public color3: string = '#fff500';
-  public color4: string = 'rgb(236,64,64)';
-  public color5: string = 'rgba(45,208,45,1)';
-  public color6: string = '#1973c0';
-  public color7: string = '#f200bd';
-  public color8: string = '#a8ff00';
-  public color9: string = '#278ce2';
-  public color10: string = '#0a6211';
-  public color11: string = '#f2ff00';
-  public color12: string = '#f200bd';
-  public color13: string = 'rgba(0,255,0,0.5)';
-  public color14: string = 'rgb(0,255,255)';
-  public color15: string = 'rgb(255,0,0)';
-  public color16: string = '#a51ad633';
-  public color17: string = '#666666';
-  public color18: string = '#fa8072';
-
   public cmykValue: string = '';
 
   public cmykColor: Cmyk = new Cmyk(0, 0, 0, 0);
 
-  constructor(public vcRef: ViewContainerRef, private cpService: ColorPickerService) {}
+  public form: FormGroup;
+  public dropShadowParts: {
+    h?: string,
+    v?: string,
+    blur?: string,
+    color?: string,
+  } = {
+    h: '0',
+    v: '0',
+    blur: '0',
+    color: '#000000',
+  };
+
+  constructor(public vcRef: ViewContainerRef, private cpService: ColorPickerService, private _fb: FormBuilder) {
+    this.form = this._fb.group({
+      shadow: ['0px 0px 0px #f200bd'],
+    });
+  }
+
+  public get getInputValue(): string {
+    return this.form.get('shadow').value;
+  }
 
   public onEventLog(event: string, data: any): void {
-    console.log(event, data);
+    if (event === 'colorPickerOpen' || event === 'cpInputChange') {
+      this._buildDropShadowString({});
+    } else if (data?.color) {
+      this._buildDropShadowString({
+        color: data.color,
+      });
+    }/*
     if (event === 'cpDropShadowChange') {
-      let shadow = '';
-      if (data.h) {
-        shadow += `${data.h}px `;
-      }
-      if (data.v) {
-        shadow += `${data.v}px `;
-      }
-      if (data.blur && (data.h || data.v)) {
-        shadow += `${data.blur}px `;
-      }
-      if (data.color) {
-        shadow += `${data.color}`;
-      }
-
-      console.log('shadow is ', shadow);
-    }
+      const input = {};
+      input[event] = data;
+      this._buildDropShadowString(input);
+    }*/
   }
 
   public onChangeColor(color: string): void {
     console.log('Color changed:', color);
   }
 
-  public onChangeColorCmyk(color: string): Cmyk {
-    const hsva = this.cpService.stringToHsva(color);
-
-    if (hsva) {
-      const rgba = this.cpService.hsvaToRgba(hsva);
-
-      return this.cpService.rgbaToCmyk(rgba);
-    }
-
-    return new Cmyk(0, 0, 0, 0);
+  onSliderChange(elt: string, value: NzSliderValue) {
+    const input = {};
+    input[elt] = value;
+    this._buildDropShadowString(input);
   }
 
-  public onChangeColorHex8(color: string): string {
-    const hsva = this.cpService.stringToHsva(color, true);
-
-    if (hsva) {
-      return this.cpService.outputFormat(hsva, 'rgba', null);
+  public get color(): string {
+    const parts = (this.form.get('shadow')?.value ?? '')
+        .trim()
+        .split(' ')
+        .map(part => part.trim());
+    const color = parts[parts.length - 1];
+    if (color?.startsWith('#')) {
+      return color;
     }
+    return '#000000';
+  }
 
-    return '';
+  private _buildDropShadowString(
+      input: {h?: string, v?: string, blur?: string, color?: string}
+  ) {
+    let {h, v, blur, color} = input;
+    const currentValue = (this.form.get('shadow')?.value ?? '')
+        ?.trim()
+        ?.split(' ')
+        ?.map(part => part.replace('px', '').trim());
+
+    const parts = [];
+
+    h = h ?? currentValue[0] ?? parts[0] ?? '0';
+    v = v ?? currentValue[1] ?? currentValue[0] ?? parts[1] ?? parts[0] ?? '0';
+    blur = blur ?? currentValue[2] ?? parts[2] ?? '0';
+    color = color ?? currentValue[3] ?? this.color ?? parts[3] ?? '#000000';
+
+    this.dropShadowParts = {
+      h, v, blur, color,
+    };
+
+    const shadow = `${h}px ${v}px ${blur}px ${color}`;
+    this.form.get('shadow').patchValue(shadow);
   }
 }

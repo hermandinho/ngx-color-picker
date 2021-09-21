@@ -1,23 +1,63 @@
-<div class="container">
+<div class="container" [formGroup]="form">
   <h1>Angular Color Picker with Dropshadow Directive</h1>
 
   <hr>
 
   <div class="row">
-    <div class="col-md-5">
-      <input (colorPickerClose)="onEventLog('colorPickerClose', $event)" (colorPickerOpen)="onEventLog('colorPickerOpen', $event)" (cpInputChange)="onEventLog('cpInputChange', $event)"
-             (cpSliderDragEnd)="onEventLog('cpSliderDragEnd', $event)"
-             (cpSliderDragStart)="onEventLog('cpSliderDragStart', $event)"
-             (cpDropShadowChange)="onEventLog('cpDropShadowChange', $event)"
-             [(colorPicker)]="color1"
-             [cpEnableDropShadow]="true"
-             [cpDisableInput]="true"
-             cpAlphaChannel='disabled'
-             [cpDropShadowValues]="{h: 10, v: 5, blur: 40, color: '#009887'}"
-             [style.background]="color1"/>
+    <div class="col">
+        <input (colorPickerClose)="onEventLog('colorPickerClose', $event)"
+               (colorPickerOpen)="onEventLog('colorPickerOpen', $event)"
+               (cpInputChange)="onEventLog('cpInputChange', $event)"
+               (cpSliderDragEnd)="onEventLog('cpSliderDragEnd', $event)"
+               (cpSliderDragStart)="onEventLog('cpSliderDragStart', $event)"
+               [colorPicker]="getInputValue"
+               [cpDisableInput]="true"
+               [cpDropShadowTemplate]="templateTest"
+               [cpEnableDropShadow]="true"
+               [style.background]="color"
+               (keyup)="onEventLog('cpInputChange', $event)"
+               cpAlphaChannel='disabled'
+               formControlName="shadow"
+               nz-input
+               nzSize="large"
+               placeholder="Drop Shadow"
+        />
+
+        <ng-template #templateTest>
+            <h1>lkdajslkdjaskldjalksdjkl</h1>
+
+            <nz-form-item>
+                <nz-form-label nzFor="borderRadius">H offset</nz-form-label>
+                <nz-form-control nzErrorTip="That looks too long.">
+                    <nz-slider (nzOnAfterChange)="onSliderChange('h', $event)" [ngModelOptions]="{standalone: true}"
+                               [ngModel]="dropShadowParts?.h" nzMax="48" nzMin="-48"></nz-slider>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzFor="borderRadius">V offset</nz-form-label>
+                <nz-form-control nzErrorTip="That looks too long.">
+                    <nz-slider (nzOnAfterChange)="onSliderChange('v', $event)"
+                               [ngModelOptions]="{standalone: true}"
+                               [ngModel]="dropShadowParts?.v"
+                               nzMax="48"
+                               nzMin="-48"></nz-slider>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzFor="borderRadius">Blur</nz-form-label>
+                <nz-form-control nzErrorTip="That looks too long.">
+                    <nz-slider (nzOnAfterChange)="onSliderChange('blur', $event)"
+                               [ngModelOptions]="{standalone: true}"
+                               [ngModel]="dropShadowParts?.blur"
+                               nzMax="48"></nz-slider>
+                </nz-form-control>
+            </nz-form-item>
+        </ng-template>
     </div>
 
-    <div class="col-md-7">
+<!--    <div class="col-md-7">
       <p>Usage:</p>
       <pre>
 &lt;input [style.background]="color"
@@ -27,7 +67,7 @@
       [cpDropShadowValues]="VALUES_OBJECT"
       </pre>
     </div>
-  </div>
+  </div>-->
 
   <hr>
   <hr>
