@@ -52,17 +52,16 @@ export class AppComponent {
 
   public onEventLog(event: string, data: any): void {
     if (event === 'colorPickerOpen' || event === 'cpInputChange') {
+      const value = data?.target?.value;
+      if (!!value) {
+        this.form.get('shadow').patchValue(value);
+      }
       this._buildDropShadowString({});
     } else if (data?.color) {
       this._buildDropShadowString({
         color: data.color,
       });
-    }/*
-    if (event === 'cpDropShadowChange') {
-      const input = {};
-      input[event] = data;
-      this._buildDropShadowString(input);
-    }*/
+    }
   }
 
   public onChangeColor(color: string): void {
@@ -94,14 +93,13 @@ export class AppComponent {
     const currentValue = (this.form.get('shadow')?.value ?? '')
         ?.trim()
         ?.split(' ')
-        ?.map(part => part.replace('px', '').trim());
+        ?.map(part => part.replace('px', '').trim())
+        ?.filter(part => part?.length);
 
-    const parts = [];
-
-    h = h ?? currentValue[0] ?? parts[0] ?? '0';
-    v = v ?? currentValue[1] ?? currentValue[0] ?? parts[1] ?? parts[0] ?? '0';
-    blur = blur ?? currentValue[2] ?? parts[2] ?? '0';
-    color = color ?? currentValue[3] ?? this.color ?? parts[3] ?? '#000000';
+    h = h ?? currentValue[0] ?? '0';
+    v = v ?? (!isNaN(currentValue[1]) ? currentValue[1] : currentValue[0]) ?? currentValue[0] ?? '0';
+    blur = blur ?? (currentValue[2] && (!isNaN(currentValue[2]) ? currentValue[2] : '0')) ?? '0';
+    color = color ?? currentValue[3] ?? this.color ?? '#000000';
 
     this.dropShadowParts = {
       h, v, blur, color,
